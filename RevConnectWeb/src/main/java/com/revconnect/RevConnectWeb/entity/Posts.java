@@ -33,6 +33,10 @@ public class Posts {
             orphanRemoval = true)
     private List<Comments> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<PostLikes> likes = new ArrayList<>();
     public Posts(){}
 
     public Posts(User user, String content) {
