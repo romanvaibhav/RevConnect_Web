@@ -8,6 +8,8 @@ import com.revconnect.RevConnectWeb.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProfileService {
 
@@ -77,4 +79,41 @@ public class ProfileService {
         );
 
     }
+
+
+    public ProfileDTO getProfile(Long userId){
+        User user= userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Profiles profile = profileRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        return new ProfileDTO(
+                profile.getBio(),
+                profile.getName(),
+                profile.getUserId(),
+                profile.getProfilePicUrl(),
+                profile.getLocation(),
+                profile.getWebsiteUrl(),
+                profile.getPrivacy()
+        );
+    }
+
+    public List<ProfileDTO> searchUserProfile(String name){
+        List<Profiles> profile=profileRepository.findByNameContainingIgnoreCase(name);
+        System.out.println("Hello");
+        return profile.stream()
+                .map(p -> new ProfileDTO(
+                        p.getBio(),
+                        p.getName(),
+                        p.getUserId(),
+                        p.getProfilePicUrl(),
+                        p.getLocation(),
+                        p.getWebsiteUrl(),
+                        p.getPrivacy()
+                ))
+                .toList();
+
+    }
+
 }

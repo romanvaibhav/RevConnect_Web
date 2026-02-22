@@ -15,7 +15,7 @@ public class Comments {
     private Long commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "posy_id",nullable = false)
+    @JoinColumn(name = "post_id",nullable = false)
     private Posts post;
 
     @ManyToOne(fetch = FetchType.LAZY)
