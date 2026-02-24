@@ -36,7 +36,7 @@ public class FollowingService {
                 .orElseThrow(() -> new RuntimeException("User to follow not found"));
 
         // ✅ Restrict follow to only BUSINESS or CREATOR accounts
-        if (!(following.getAccountType() == AccountType.BUSINESS ||
+        if (!(following.getAccountType() == AccountType.BUSINESS
                 )) {
             throw new RuntimeException("You can only follow business or creator accounts");
         }
