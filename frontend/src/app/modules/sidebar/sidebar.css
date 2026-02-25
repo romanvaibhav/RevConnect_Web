@@ -1,0 +1,86 @@
+/* Full page layout */
+.layout {
+  /* height: 100vh; */
+  overflow: hidden;
+  background: #f3f4f6; /* light gray */
+}
+
+/* Wrapper that controls hover */
+.sidebar-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 50;
+}
+
+/* Sidebar styles */
+.sidebar {
+  height: 100%;
+  width: 15vw; /* 15% width */
+  min-width: 200px;
+  max-width: 280px;
+
+  background: #ffffff; /* white */
+  color: #1f2937;
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+
+  transform: translateX(-90%); /* hidden, leave small part */
+  transition: transform 300ms ease-in-out;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* Slide in on hover */
+.sidebar-wrap:hover .sidebar {
+  transform: translateX(0);
+}
+
+/* Title */
+.sidebar-title {
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Nav */
+.sidebar-nav {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 150ms ease;
+}
+
+.nav-item:hover {
+  background: #f3f4f6;
+}
+
+/* Small handle visible when sidebar is hidden */
+.handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 70px;
+  background: #d1d5db;
+  border-radius: 0 10px 10px 0;
+}
+
+/* Main content */
+.content {
+  height: 100vh;
+  padding: 24px;
+  margin-left: 16px; /* keeps a little gap from left */
+}

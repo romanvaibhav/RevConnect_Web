@@ -1,0 +1,80 @@
+<div class="page">
+  <!-- Posts scroll container -->
+  <section class="posts-scroll">
+    <div class="header">
+      <h2>Posts</h2>
+      <button class="btn" (click)="fetchPosts()">Refresh</button>
+    </div>
+
+    <div *ngIf="loadingPosts" class="muted">Loading posts...</div>
+    <div *ngIf="!loadingPosts && posts.length === 0" class="muted">No posts found.</div>
+
+    <article class="post-card" *ngFor="let post of posts">
+      <div class="post-top">
+        <div class="post-user">{{ post.username || 'User' }}</div>
+        <div class="post-date">{{ post.createdAt || '' }}</div>
+      </div>
+
+      <div class="post-content">
+        {{ post.content }}
+      </div>
+
+      <!-- (click)="onLike(post)" -->
+
+      <div class="post-actions">
+        <button class="action" [disabled]="likingPostIds.has(post.id)">
+          👍 Like <span class="count">{{ post.likeCount ?? 0 }}</span>
+        </button>
+
+        <!-- (click)="openComments(post)" -->
+        <button class="action">
+          💬 Comment <span class="count">{{ post.commentCount ?? 0 }}</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- bottom padding so last post isn't hidden behind comments drawer -->
+    <div class="bottom-space"></div>
+  </section>
+
+  <!-- Comments Drawer (fixed) -->
+  <!-- <div class="overlay" *ngIf="isCommentsOpen" (click)="closeComments()"></div> -->
+
+  <aside class="comments-drawer" *ngIf="isCommentsOpen">
+    <!-- <div class="drawer-header">
+      <div class="drawer-title">
+        Comments • Post #{{ activePost?.id }}
+      </div>
+      <button class="icon-btn" (click)="closeComments()">✕</button>
+    </div> -->
+
+    <!-- Add comment fixed area -->
+    <!-- <div class="add-comment">
+      <input
+        type="text"
+        placeholder="Write a comment..."
+        [(ngModel)]="newCommentText"
+        (keydown.enter)="addComment()"
+      />
+      <button class="btn primary" (click)="addComment()">Send</button>
+    </div> -->
+
+    <!-- Comments scroll area -->
+    <div class="comments-scroll">
+      <div *ngIf="loadingComments" class="muted">Loading comments...</div>
+
+      <div *ngIf="!loadingComments && comments.length === 0" class="muted">No comments yet.</div>
+
+      <!-- <div
+        class="comment"
+        *ngFor="let c of comments; trackBy: trackByCommentId"
+      >
+        <div class="comment-top">
+          <span class="comment-user">{{ c.username || 'User' }}</span>
+          <span class="comment-date">{{ c.createdAt || '' }}</span>
+        </div>
+        <div class="comment-text">{{ c.text }}</div>
+      </div> -->
+    </div>
+  </aside>
+</div>

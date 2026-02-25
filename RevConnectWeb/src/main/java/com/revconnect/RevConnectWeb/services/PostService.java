@@ -4,6 +4,8 @@ package com.revconnect.RevConnectWeb.services;
 import com.revconnect.RevConnectWeb.DTO.PostDTO;
 import com.revconnect.RevConnectWeb.entity.Posts;
 import com.revconnect.RevConnectWeb.entity.User;
+import com.revconnect.RevConnectWeb.repository.CommentsRepository;
+import com.revconnect.RevConnectWeb.repository.PostLikesRepository;
 import com.revconnect.RevConnectWeb.repository.PostRepository;
 import com.revconnect.RevConnectWeb.repository.UserRepository;
 import org.springframework.data.domain.Sort;
@@ -18,9 +20,15 @@ public class PostService {
 
     private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository,UserRepository userRepository){
+    private final PostLikesRepository postLikeRepository;
+
+    private final CommentsRepository commentRepository;
+
+    public PostService(PostRepository postRepository,UserRepository userRepository,PostLikesRepository postLikeRepository,CommentsRepository commentRepository){
         this.postRepository=postRepository;
         this.userRepository=userRepository;
+        this.commentRepository=commentRepository;
+        this.postLikeRepository=postLikeRepository;
     }
 
     public PostDTO createPost(Long userId, PostDTO postDTO){
@@ -36,7 +44,9 @@ public class PostService {
                 savedPost.getUser().getUserId(),
                 savedPost.getContent(),
                 savedPost.getCreatedAt(),
-                savedPost.getUpdatedAt()
+                savedPost.getUpdatedAt(),
+                postLikeRepository.countByPostPostId(post.getPostId()),
+                commentRepository.countByPostPostId(post.getPostId())
         );
     }
 
@@ -61,7 +71,9 @@ public class PostService {
                         post.getUser().getUserId(),
                         post.getContent(),
                         post.getCreatedAt(),
-                        post.getUpdatedAt()
+                        post.getUpdatedAt(),
+                        postLikeRepository.countByPostPostId(post.getPostId()),
+                        commentRepository.countByPostPostId(post.getPostId())
                 ))
                 .toList();
     }
@@ -74,7 +86,9 @@ public class PostService {
                         post.getUser().getUserId(),
                         post.getContent(),
                         post.getCreatedAt(),
-                        post.getUpdatedAt()
+                        post.getUpdatedAt(),
+                        postLikeRepository.countByPostPostId(post.getPostId()),
+                        commentRepository.countByPostPostId(post.getPostId())
                 ))
                 .toList();
     }
@@ -92,7 +106,9 @@ public class PostService {
                 updatedPost.getUser().getUserId(),
                 updatedPost.getContent(),
                 updatedPost.getCreatedAt(),
-                updatedPost.getUpdatedAt()
+                updatedPost.getUpdatedAt(),
+                postLikeRepository.countByPostPostId(post.getPostId()),
+                commentRepository.countByPostPostId(post.getPostId())
         );
 
     }

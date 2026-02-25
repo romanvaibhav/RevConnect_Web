@@ -10,23 +10,44 @@ public class PostDTO {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long likeCount;
+    private Long commentCount;
 //    private List<String> hashtags;
+
+    public Long getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Long commentCount) {
+        this.commentCount = commentCount;
+    }
 
     public PostDTO() {}
 
+    public Long getLikeCount() {
+        return likeCount;
+    }
 
-//    List<String> hashtags
+    public void setLikeCount(Long likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    //    List<String> hashtags
     public PostDTO(Long postId,
                    Long userId,
                    String content,
                    LocalDateTime createdAt,
-                   LocalDateTime updatedAt
+                   LocalDateTime updatedAt,
+                   Long likeCount,
+                   Long commentCount
                    ) {
         this.postId = postId;
         this.userId = userId;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.likeCount = likeCount;
+        this.commentCount = commentCount;
 //        this.hashtags = hashtags;
     }
 

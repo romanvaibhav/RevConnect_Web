@@ -25,22 +25,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Map<String, Object> body) {
-        System.out.println("REGISTER HIT");
 
         String email = (String) body.get("email");
         String username = (String) body.get("username");
         String password = (String) body.get("password");
         AccountType accountType = AccountType.valueOf((String) body.get("accountType"));
 
+        authService.register(email, username, password, accountType);
 
-        return ResponseEntity.ok(
-                authService.register(
-                        email,
-                        username,
-                        password,
-                        accountType
-                )
-        );
+        return ResponseEntity
+                .ok()
+                .body("Registered Successfully");
     }
 
     @PostMapping("/login")

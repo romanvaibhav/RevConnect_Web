@@ -1,6 +1,7 @@
 package com.revconnect.RevConnectWeb.security;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,5 +57,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        if (HttpMethod.OPTIONS.matches(request.getMethod())) return true;
+
+        if (path.equals("/auth/register") || path.equals("/auth/login")) return true;
+
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui") || path.equals("/swagger-ui.html")) return true;
+
+        return false;
     }
 }
