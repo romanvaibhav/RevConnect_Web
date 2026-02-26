@@ -1,0 +1,97 @@
+<section class="page">
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h2 class="title">Notifications</h2>
+        <p class="subtitle" *ngIf="unreadCount > 0">
+          You have <b>{{ unreadCount }}</b> unread notifications
+        </p>
+      </div>
+
+      <button class="btn primary" (click)="markAllAsRead()" [disabled]="unreadCount === 0">
+        Mark All as Read
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab === 'all'" (click)="setTab('all')">All</button>
+
+      <button class="tab" [class.active]="activeTab === 'unread'" (click)="setTab('unread')">
+        Unread
+        <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </button>
+
+      <button
+        class="tab"
+        [class.active]="activeTab === 'preferences'"
+        (click)="setTab('preferences')"
+      >
+        Preferences
+      </button>
+    </div>
+
+    <!-- Errors -->
+    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <!-- Preferences -->
+    <div class="card" *ngIf="activeTab === 'preferences'">
+      <h3 class="card-title">Notification Preferences</h3>
+      <p class="muted">Choose how you want to receive updates.</p>
+
+      <div class="pref-grid">
+        <label class="pref-item">
+          <input type="checkbox" [(ngModel)]="prefInApp" />
+          <span>In-app notifications</span>
+        </label>
+
+        <label class="pref-item">
+          <input type="checkbox" [(ngModel)]="prefPush" />
+          <span>Push notifications</span>
+        </label>
+
+        <label class="pref-item">
+          <input type="checkbox" [(ngModel)]="prefEmail" />
+          <span>Email notifications</span>
+        </label>
+      </div>
+
+      <button class="btn" (click)="savePreferences()">Save Preferences</button>
+    </div>
+
+    <!-- List -->
+    <div class="list" *ngIf="activeTab !== 'preferences'">
+      <div class="loading" *ngIf="loading">Loading...</div>
+
+      <div class="empty" *ngIf="!loading && filteredNotifications.length === 0">
+        No notifications found.
+      </div>
+
+      <div class="row" *ngFor="let n of filteredNotifications">
+        <div class="left">
+          <div class="icon">{{ getIcon(n.type) }}</div>
+
+          <div class="meta">
+            <div class="msg" [class.unread]="!n.read">
+              {{ n.message }}
+            </div>
+
+            <div class="sub">
+              <span class="type">{{ getTypeLabel(n.type) }}</span>
+              <span class="dot">•</span>
+              <span class="time">{{ n.createdAt | date: 'medium' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right">
+          <span class="blue-dot" *ngIf="!n.read"></span>
+
+          <button class="mark" (click)="markAsRead(n)" [disabled]="n.read">
+            {{ n.read ? 'Read' : 'Mark Read' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

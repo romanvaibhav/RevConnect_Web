@@ -16,6 +16,7 @@
 
 /* Sidebar styles */
 .sidebar {
+  margin-top: 60px;
   height: 100%;
   width: 15vw; /* 15% width */
   min-width: 200px;

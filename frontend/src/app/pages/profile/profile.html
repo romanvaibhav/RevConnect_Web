@@ -1,0 +1,191 @@
+<div class="page">
+  <div class="profile-card">
+    <div class="top">
+      <div class="avatar">
+        <img
+          *ngIf="profile?.profilePicUrl; else defaultAvatar"
+          [src]="profile?.profilePicUrl"
+          alt="Profile"
+        />
+        <ng-template #defaultAvatar>
+          <div class="avatar-fallback">
+            {{ (profile?.name || 'U')?.charAt(0) }}
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="top-right">
+        <div class="name-row">
+          <div>
+            <h2 class="name">{{ profile?.name || 'Loading...' }}</h2>
+            <span class="privacy">{{ profile?.privacy || '' }}</span>
+          </div>
+
+          <!-- Edit Icon Button -->
+          <button class="icon-btn" (click)="openEditModal()" title="Edit Profile">✏️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="details">
+      <p class="bio">{{ profile?.bio }}</p>
+
+      <div class="meta">
+        <div class="meta-item">
+          <span class="label">Location</span>
+          <span class="value">{{ profile?.location }}</span>
+        </div>
+
+        <div class="meta-item">
+          <span class="label">Website</span>
+          <a
+            class="value link"
+            *ngIf="profile?.websiteUrl"
+            [href]="formatWebsite(profile.websiteUrl)"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ profile.websiteUrl }}
+          </a>
+          <span class="value" *ngIf="!profile?.websiteUrl">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab === 'posts'" (click)="activeTab = 'posts'">
+        Posts
+      </button>
+
+      <button class="tab" [class.active]="activeTab === 'saved'" (click)="activeTab = 'saved'">
+        Saved Posts
+      </button>
+
+      <button class="tab" [class.active]="activeTab === 'shared'" (click)="activeTab = 'shared'">
+        Shared Posts
+      </button>
+    </div>
+
+    <div class="tab-content">
+      <div *ngIf="activeTab === 'posts'">
+        <article class="post-card" *ngFor="let post of posts">
+          <div class="post-top">
+            <div class="post-user">
+              {{ profile?.name || 'User' }}
+            </div>
+            <div class="post-date">
+              {{ post.createdAt | date: 'mediumDate' }}
+            </div>
+          </div>
+
+          <div class="post-content">
+            {{ post.content }}
+          </div>
+
+          <div class="likeandcomment">
+            <p>
+              <span class="count">{{ post.likeCount ?? 0 }} Likes</span>
+            </p>
+            <p id="commentcnt">
+              <span class="count">{{ post.commentCount ?? 0 }} Comments</span>
+            </p>
+          </div>
+
+          <hr />
+
+          <!-- [disabled]="likingPostIds?.has(post.postId)"
+          [class.liked-btn]="post.liked"
+          (click)="onLike(post)" -->
+          <div class="post-actions">
+            <div class="like-actions">
+              <button class="action">👍</button>
+              <!-- (click)="onUnlike(post)"
+          [disabled]="likingPostIds?.has(post.postId)" -->
+              <button class="action">👎</button>
+
+              <span class="count">{{ post.likeCount ?? 0 }}</span>
+            </div>
+
+            <button class="action">💬 Comment</button>
+          </div>
+        </article>
+
+        <div class="bottom-space"></div>
+      </div>
+      <div *ngIf="activeTab === 'saved'">Saved posts will appear here…</div>
+      <div *ngIf="activeTab === 'shared'">Shared posts will appear here…</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" *ngIf="isEditOpen" (click)="closeEditModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Edit Profile</h3>
+      <button class="icon-btn" (click)="closeEditModal()" title="Close">✖</button>
+    </div>
+
+    <form class="form" (ngSubmit)="saveProfile()" #f="ngForm">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" name="name" [(ngModel)]="editForm.name" required />
+      </div>
+
+      <div class="field">
+        <label>Bio</label>
+        <textarea name="bio" rows="3" [(ngModel)]="editForm.bio"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Location</label>
+        <input type="text" name="location" [(ngModel)]="editForm.location" />
+      </div>
+
+      <div class="field">
+        <label>Website URL</label>
+        <input
+          type="text"
+          name="websiteUrl"
+          [(ngModel)]="editForm.websiteUrl"
+          placeholder="www.example.com"
+        />
+      </div>
+
+      <div class="field">
+        <label>Profile Pic URL</label>
+        <input
+          type="text"
+          name="profilePicUrl"
+          [(ngModel)]="editForm.profilePicUrl"
+          placeholder="https://..."
+        />
+      </div>
+
+      <div class="field">
+        <label>Privacy</label>
+        <select name="privacy" [(ngModel)]="editForm.privacy">
+          <option value="public">public</option>
+          <option value="private">private</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" (click)="closeEditModal()">Cancel</button>
+        <button
+          type="submit"
+          class="btn primary"
+          (click)="saveProfile()"
+          [disabled]="isSaving || !f.valid"
+        >
+          {{ isSaving ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+
+      <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+      <p class="success" *ngIf="successMsg">{{ successMsg }}</p>
+    </form>
+  </div>
+</div>

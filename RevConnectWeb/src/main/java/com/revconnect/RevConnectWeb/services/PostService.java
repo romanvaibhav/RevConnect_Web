@@ -3,11 +3,10 @@ package com.revconnect.RevConnectWeb.services;
 
 import com.revconnect.RevConnectWeb.DTO.PostDTO;
 import com.revconnect.RevConnectWeb.entity.Posts;
+import com.revconnect.RevConnectWeb.entity.Profiles;
 import com.revconnect.RevConnectWeb.entity.User;
-import com.revconnect.RevConnectWeb.repository.CommentsRepository;
-import com.revconnect.RevConnectWeb.repository.PostLikesRepository;
-import com.revconnect.RevConnectWeb.repository.PostRepository;
-import com.revconnect.RevConnectWeb.repository.UserRepository;
+import com.revconnect.RevConnectWeb.repository.*;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -23,18 +22,22 @@ public class PostService {
     private final PostLikesRepository postLikeRepository;
 
     private final CommentsRepository commentRepository;
+    private final ProfileRepository profileRepository;
 
-    public PostService(PostRepository postRepository,UserRepository userRepository,PostLikesRepository postLikeRepository,CommentsRepository commentRepository){
+
+    public PostService(PostRepository postRepository,UserRepository userRepository,PostLikesRepository postLikeRepository,CommentsRepository commentRepository,ProfileRepository profileRepository){
         this.postRepository=postRepository;
         this.userRepository=userRepository;
         this.commentRepository=commentRepository;
         this.postLikeRepository=postLikeRepository;
+        this.profileRepository=profileRepository;
     }
 
     public PostDTO createPost(Long userId, PostDTO postDTO){
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
 
         Posts post = new Posts(user, postDTO.getContent());
 
@@ -46,7 +49,9 @@ public class PostService {
                 savedPost.getCreatedAt(),
                 savedPost.getUpdatedAt(),
                 postLikeRepository.countByPostPostId(post.getPostId()),
-                commentRepository.countByPostPostId(post.getPostId())
+                commentRepository.countByPostPostId(post.getPostId()),
+                ""
+
         );
     }
 
@@ -65,31 +70,44 @@ public class PostService {
         List<Posts> posts = postRepository.findAll(
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
+
         return posts.stream()
-                .map(post -> new PostDTO(
-                        post.getPostId(),
-                        post.getUser().getUserId(),
-                        post.getContent(),
-                        post.getCreatedAt(),
-                        post.getUpdatedAt(),
-                        postLikeRepository.countByPostPostId(post.getPostId()),
-                        commentRepository.countByPostPostId(post.getPostId())
-                ))
+                .map(post -> {
+                    Profiles profile = profileRepository.findByUserUserId(post.getUser().getUserId());
+                    String name = (profile != null) ? profile.getName() : "Unknown";
+
+                    return new PostDTO(
+                            post.getPostId(),
+                            post.getUser().getUserId(),
+                            post.getContent(),
+                            post.getCreatedAt(),
+                            post.getUpdatedAt(),
+                            postLikeRepository.countByPostPostId(post.getPostId()),
+                            commentRepository.countByPostPostId(post.getPostId()),
+                            name // ✅ String
+                    );
+                })
                 .toList();
     }
 
     public List<PostDTO> getUserPosts(Long userId){
         List<Posts> posts=postRepository.findByUserUserIdOrderByCreatedAtDesc(userId);
         return posts.stream()
-                .map(post -> new PostDTO(
-                        post.getPostId(),
-                        post.getUser().getUserId(),
-                        post.getContent(),
-                        post.getCreatedAt(),
-                        post.getUpdatedAt(),
-                        postLikeRepository.countByPostPostId(post.getPostId()),
-                        commentRepository.countByPostPostId(post.getPostId())
-                ))
+                .map(post -> {
+                    Profiles profile = profileRepository.findByUserUserId(post.getUser().getUserId());
+                    String name = (profile != null) ? profile.getName() : "Unknown";
+
+                    return new PostDTO(
+                            post.getPostId(),
+                            post.getUser().getUserId(),
+                            post.getContent(),
+                            post.getCreatedAt(),
+                            post.getUpdatedAt(),
+                            postLikeRepository.countByPostPostId(post.getPostId()),
+                            commentRepository.countByPostPostId(post.getPostId()),
+                            name // ✅ String
+                    );
+                })
                 .toList();
     }
 
@@ -108,7 +126,10 @@ public class PostService {
                 updatedPost.getCreatedAt(),
                 updatedPost.getUpdatedAt(),
                 postLikeRepository.countByPostPostId(post.getPostId()),
-                commentRepository.countByPostPostId(post.getPostId())
+                commentRepository.countByPostPostId(post.getPostId()),
+                ""
+
+
         );
 
     }

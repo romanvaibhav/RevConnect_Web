@@ -11,6 +11,7 @@ export class Postservice {
 
   constructor(private httpClient: HttpClient) {}
 
+  //Get all the posts
   getAllPosts(): Observable<any> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
@@ -20,12 +21,89 @@ export class Postservice {
     return this.httpClient.get(`${Postservice.baseUrl}/post/getposts`, { headers });
   }
 
-  //
-  // postLike():Observable<any>{
-  //   const token = localStorage.getItem('token');
-  //   const
-  //    const headers = new HttpHeaders({
-  //     Authorization: `Bearer ${token}`,
-  //   });
-  // }
+  //get all the promotional posts
+  getAllPromotionalPosts(): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.httpClient.get(`${Postservice.baseUrl}/api/posts`, { headers });
+  }
+
+  postLike(postId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    const userId = Number(localStorage.getItem('userId'));
+    console.log('Printing userId hehehe', userId);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.httpClient.post(
+      `${Postservice.baseUrl}/post/${postId}/like/${userId}`,
+      {},
+      { headers },
+    );
+  }
+
+  postUnlike(postId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    const userId = Number(localStorage.getItem('userId'));
+    console.log('Printing userId hehehe', userId);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.httpClient.delete(`${Postservice.baseUrl}/post/${postId}/unlike/${userId}`, {
+      headers,
+    });
+  }
+
+  //Create post
+  createPosts(postData: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    const userId = Number(localStorage.getItem('userId'));
+    console.log('Printing userId hehehe', userId);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.httpClient.post(`${Postservice.baseUrl}/post/create/${userId}`, postData, {
+      headers,
+    });
+  }
+
+  // Add comment
+  addComment(commentData: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    const userId = Number(localStorage.getItem('userId'));
+    console.log('Printing userId hehehe', userId);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.httpClient.post(`${Postservice.baseUrl}/comment`, commentData, {
+      headers,
+    });
+  }
+
+  getCommentsByPost(postId: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    const userId = Number(localStorage.getItem('userId'));
+    console.log('Printing userId hehehe', userId);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.httpClient.get(`${Postservice.baseUrl}/comment/post/${postId}`, {
+      headers,
+    });
+  }
+
+  deleteComment(commentId: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    const userId = Number(localStorage.getItem('userId'));
+    console.log('Printing userId hehehe', userId);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.httpClient.delete(`${Postservice.baseUrl}/comment/${commentId}/${userId}`, {
+      headers,
+    });
+  }
 }

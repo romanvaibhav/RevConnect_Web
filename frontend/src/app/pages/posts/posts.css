@@ -54,7 +54,14 @@
 .header button {
   margin-right: -660px;
 }
+.post-date {
+  font-weight: bold;
+  color: black;
+}
 
+#likeCo {
+  color: rgba(16, 131, 226, 0.867);
+}
 .post-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -62,7 +69,8 @@
   padding: 20px;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
   margin-bottom: 12px;
-  height: 15vh;
+  min-height: 15vh;
+  max-height: auto;
   width: 70%;
   margin-left: 13%;
 }
@@ -82,9 +90,20 @@
 }
 
 .post-content {
+  margin-top: 25px;
   font-size: 15px;
   line-height: 1.4;
-  margin-bottom: 12px;
+  margin-bottom: 70px;
+}
+
+.likeandcomment {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#commentcnt {
+  margin-left: -40px;
 }
 
 .post-actions {
@@ -99,6 +118,20 @@
   border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* .action {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+} */
+
+.liked-btn {
+  background-color: #2563eb; /* blue */
+  color: white;
 }
 
 .action:disabled {

@@ -1,0 +1,54 @@
+<div class="page">
+  <div class="container">
+    <div class="header-row">
+      <h2 class="title">Create Post</h2>
+      <button class="btn outline" (click)="clear()" [disabled]="isPosting">
+        Clear
+      </button>
+    </div>
+
+    <!-- Card like your feed cards -->
+    <section class="card">
+      <div class="card-top">
+        <div class="left">
+          <div class="avatar">
+            <div class="avatar-fallback">VR</div>
+          </div>
+
+          <div class="meta">
+            <p class="name">Vaibhav Roman</p>
+            <p class="sub">Share your thoughts with your network</p>
+          </div>
+        </div>
+
+        <div class="right">
+          <button
+            class="btn primary"
+            (click)="onCreatePost()"
+            [disabled]="!canPost()"
+          >
+            {{ isPosting ? 'Posting...' : 'Post' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="editor">
+        <textarea
+          class="textarea"
+          [(ngModel)]="postText"
+          [maxlength]="maxLen"
+          placeholder="Write something..."
+        ></textarea>
+
+        <div class="editor-footer">
+          <span class="counter" [class.danger]="remainingChars <= 20">
+            {{ remainingChars }} left
+          </span>
+        </div>
+
+        <p class="msg success" *ngIf="successMsg">{{ successMsg }}</p>
+        <p class="msg error" *ngIf="errorMsg">{{ errorMsg }}</p>
+      </div>
+    </section>
+  </div>
+</div>

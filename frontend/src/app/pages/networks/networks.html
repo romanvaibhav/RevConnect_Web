@@ -1,0 +1,181 @@
+<div class="page">
+  <div class="container">
+    <h2 class="title">Network</h2>
+
+    <!-- Summary cards -->
+    <div class="stats-row">
+      <div class="stat-card" (click)="openModal('connections')">
+        <div class="stat-top">
+          <p class="stat-label">Connections</p>
+          <span class="pill">{{ connections?.length || 0 }}</span>
+        </div>
+        <p class="stat-sub">View all connections</p>
+      </div>
+
+      <div class="stat-card" (click)="openModal('following')">
+        <div class="stat-top">
+          <p class="stat-label">Following</p>
+          <span class="pill">{{ followings?.length || 0 }}</span>
+        </div>
+        <p class="stat-sub">People you follow</p>
+      </div>
+
+      <div class="stat-card" (click)="openModal('pending')">
+        <div class="stat-top">
+          <p class="stat-label">Pending Requests</p>
+          <span class="pill warn">{{ pendingRequests?.length || 0 }}</span>
+        </div>
+        <p class="stat-sub">Requests awaiting action</p>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card">
+      <div class="card-head">
+        <h3 class="card-title">Search users</h3>
+      </div>
+
+      <div class="search-row">
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Search by name..."
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="btn primary" (click)="onSearch()">Search</button>
+      </div>
+
+      <!-- results -->
+      <div class="list" *ngIf="searchResults?.length; else emptySearch">
+        <div class="item" *ngFor="let u of searchResults">
+          <div class="left">
+            <div class="avatar">
+              <img *ngIf="u.profilePicUrl" [src]="u.profilePicUrl" alt="pic" />
+              <div class="avatar-fallback" *ngIf="!u.profilePicUrl">
+                {{ (u.name || 'U').charAt(0) }}
+              </div>
+            </div>
+
+            <div class="meta">
+              <p class="name">{{ u.name }}</p>
+              <p class="sub" *ngIf="u.location">📍 {{ u.location }}</p>
+              <p class="sub" *ngIf="u.websiteUrl">{{ u.websiteUrl }}</p>
+            </div>
+          </div>
+
+          <div class="right">
+            <!-- optional: add connect/follow buttons later -->
+            <button class="btn outline" (click)="viewProfile(u.userId)">View</button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptySearch>
+        <p class="muted">Search users to connect or follow.</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()"></div>
+
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title">
+          {{
+            modalType === 'connections'
+              ? 'Your Connections'
+              : modalType === 'following'
+              ? 'Following'
+              : 'Pending Requests'
+          }}
+        </h3>
+        <button class="icon-btn" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Connections -->
+        <div class="list" *ngIf="modalType === 'connections'">
+          <div class="item" *ngFor="let c of connections">
+            <div class="left">
+              <div class="avatar">
+                <img *ngIf="c.profilePicUrl" [src]="c.profilePicUrl" alt="pic" />
+                <div class="avatar-fallback" *ngIf="!c.profilePicUrl">
+                  {{ (c.name || 'U').charAt(0) }}
+                </div>
+              </div>
+              <div class="meta">
+                <p class="name">{{ c.name }}</p>
+                <p class="sub" *ngIf="c.location">📍 {{ c.location }}</p>
+              </div>
+            </div>
+
+            <div class="right">
+              <button class="btn danger" (click)="removeConnection(c.userId)">
+                Remove
+              </button>
+            </div>
+          </div>
+
+          <p class="muted" *ngIf="!connections?.length">No connections yet.</p>
+        </div>
+
+        <!-- Following -->
+        <div class="list" *ngIf="modalType === 'following'">
+          <div class="item" *ngFor="let f of followings">
+            <div class="left">
+              <div class="avatar">
+                <img *ngIf="f.profilePicUrl" [src]="f.profilePicUrl" alt="pic" />
+                <div class="avatar-fallback" *ngIf="!f.profilePicUrl">
+                  {{ (f.name || 'U').charAt(0) }}
+                </div>
+              </div>
+              <div class="meta">
+                <p class="name">{{ f.name }}</p>
+                <p class="sub" *ngIf="f.location">📍 {{ f.location }}</p>
+              </div>
+            </div>
+
+            <div class="right">
+              <button class="btn danger" (click)="unfollow(f.userId)">Unfollow</button>
+            </div>
+          </div>
+
+          <p class="muted" *ngIf="!followings?.length">Not following anyone.</p>
+        </div>
+
+        <!-- Pending -->
+        <div class="list" *ngIf="modalType === 'pending'">
+          <div class="item" *ngFor="let r of pendingRequests">
+            <div class="left">
+              <div class="avatar">
+                <img *ngIf="r.profilePicUrl" [src]="r.profilePicUrl" alt="pic" />
+                <div class="avatar-fallback" *ngIf="!r.profilePicUrl">
+                  {{ (r.name || 'U').charAt(0) }}
+                </div>
+              </div>
+
+              <div class="meta">
+                <p class="name">{{ r.name }}</p>
+                <p class="sub" *ngIf="r.location">📍 {{ r.location }}</p>
+              </div>
+            </div>
+
+            <div class="right gap">
+              <button class="btn primary" (click)="acceptRequest(r.requestId)">
+                Accept
+              </button>
+              <button class="btn outline danger-outline" (click)="rejectRequest(r.requestId)">
+                Reject
+              </button>
+            </div>
+          </div>
+
+          <p class="muted" *ngIf="!pendingRequests?.length">No pending requests.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -12,6 +12,15 @@ public class PostDTO {
     private LocalDateTime updatedAt;
     private Long likeCount;
     private Long commentCount;
+    private String profileName;
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
+    }
 //    private List<String> hashtags;
 
     public Long getCommentCount() {
@@ -39,7 +48,8 @@ public class PostDTO {
                    LocalDateTime createdAt,
                    LocalDateTime updatedAt,
                    Long likeCount,
-                   Long commentCount
+                   Long commentCount,
+                   String profileName
                    ) {
         this.postId = postId;
         this.userId = userId;
@@ -48,6 +58,7 @@ public class PostDTO {
         this.updatedAt = updatedAt;
         this.likeCount = likeCount;
         this.commentCount = commentCount;
+        this.profileName=profileName;
 //        this.hashtags = hashtags;
     }
 

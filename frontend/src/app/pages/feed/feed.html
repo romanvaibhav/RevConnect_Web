@@ -1,0 +1,180 @@
+<section class="page">
+  <div class="container">
+    <!-- Top bar -->
+    <div class="topbar">
+      <h2 class="heading">Posts</h2>
+
+      <div class="top-actions">
+        <!-- Hashtag search -->
+        <div class="search-wrap">
+          <span class="hash">#</span>
+          <input
+            class="search"
+            type="text"
+            placeholder="Search posts by hashtag (ex: java, aws, angular)"
+            [(ngModel)]="hashtagQuery"
+            (input)="applyHashtagFilter()"
+          />
+          <button class="clear-btn" *ngIf="hashtagQuery.trim()" (click)="clearHashtagSearch()">
+            ✕
+          </button>
+        </div>
+
+        <button class="refresh-btn" (click)="loadFeed()" [disabled]="loading">
+          {{ loading ? 'Loading...' : 'Refresh' }}
+        </button>
+      </div>
+    </div>
+
+    <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+    <!-- Empty state -->
+    <p class="muted" *ngIf="!loading && filteredPosts.length === 0">
+      No posts found.
+    </p>
+
+    <!-- Posts -->
+    <article class="post-card" *ngFor="let post of filteredPosts">
+      <div class="post-top">
+        <div class="post-user">
+          {{ post.profileName || 'User' }}
+
+          <span class="promoted-badge" *ngIf="post.isPromoted">Promoted</span>
+          <span class="pinned-badge" *ngIf="post.isPromoted && post.isPinned">Pinned</span>
+        </div>
+
+        <div class="post-date">{{ post.createdAt | date: 'mediumDate' }}</div>
+      </div>
+
+      <!-- Promo image -->
+      <div class="promo-image" *ngIf="post.isPromoted && post.imageUrl">
+        <img [src]="post.imageUrl" alt="promo" />
+      </div>
+
+      <div class="post-content">
+        {{ post.content }}
+      </div>
+
+      <!-- Promo CTA -->
+      <div class="cta-row" *ngIf="post.isPromoted && post.ctaUrl">
+        <button class="cta-btn" (click)="openCta(post.ctaUrl)">
+          {{ post.ctaType || 'Learn More' }}
+        </button>
+      </div>
+
+      <div class="likeandcomment">
+        <p>
+          <span class="count">{{ post.likeCount ?? 0 }} Likes</span>
+        </p>
+        <p id="commentcnt">
+          <span class="count">{{ post.commentCount ?? 0 }} Comments</span>
+        </p>
+      </div>
+
+      <hr />
+
+      <div class="post-actions">
+        <div class="like-actions">
+          <!-- 👍 LIKE BUTTON -->
+          <button
+            class="action"
+            [disabled]="likingPostIds.has(post.postId)"
+            [class.liked-btn]="post.liked"
+            (click)="onLike(post)"
+            title="Like"
+          >
+            <fa-icon [icon]="faThumbsUp"></fa-icon>
+          </button>
+
+          <!-- 👎 UNLIKE BUTTON -->
+          <button
+            class="action"
+            (click)="onUnlike(post)"
+            [disabled]="likingPostIds.has(post.postId)"
+            title="Unlike"
+          >
+            <fa-icon [icon]="faThumbsDown"></fa-icon>
+          </button>
+
+          <span class="count">{{ post.likeCount }}</span>
+        </div>
+
+        <button class="action" (click)="openComments(post)">
+          <fa-icon [icon]="faComment"></fa-icon> Comment
+        </button>
+      </div>
+    </article>
+
+    <div class="bottom-space"></div>
+  </div>
+
+  <!-- COMMENT MODAL -->
+  <div class="modal-backdrop" *ngIf="commentModalOpen" (click)="closeComments()"></div>
+
+  <div class="modal" *ngIf="commentModalOpen">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Comments</h3>
+          <p class="modal-sub" *ngIf="activePost">
+            {{ activePost.profileName }} • {{ activePost.createdAt | date: 'mediumDate' }}
+          </p>
+        </div>
+
+        <button class="close-btn" (click)="closeComments()">✕</button>
+      </div>
+
+      <!-- Add comment -->
+      <div class="add-comment">
+        <textarea
+          class="comment-input"
+          [(ngModel)]="newCommentText"
+          placeholder="Write a comment..."
+        ></textarea>
+
+        <button
+          class="cta-btn"
+          (click)="addComment()"
+          [disabled]="postingComment || !newCommentText.trim()"
+        >
+          {{ postingComment ? 'Posting...' : 'Post Comment' }}
+        </button>
+
+        <p class="error" *ngIf="commentError">{{ commentError }}</p>
+      </div>
+
+      <hr class="modal-divider" />
+
+      <!-- Comment list -->
+      <div class="comment-list">
+        <p class="muted" *ngIf="loadingComments">Loading comments...</p>
+        <p class="muted" *ngIf="!loadingComments && comments.length === 0">
+          No comments yet.
+        </p>
+
+        <div class="comment-item" *ngFor="let c of comments">
+          <div class="comment-top">
+            <span class="comment-user">{{ c.profileName || 'User' }}</span>
+
+            <div class="comment-right">
+              <span class="comment-date">{{ c.createdAt | date: 'mediumDate' }}</span>
+
+              <!-- Delete only if comment belongs to user -->
+              <button
+                class="delete-comment"
+                *ngIf="isMyComment(c)"
+                (click)="onDeleteComment(c)"
+                [disabled]="deletingCommentIds.has(c.commentId || c.id)"
+                title="Delete"
+              >
+                {{ deletingCommentIds.has(c.commentId || c.id) ? '...' : 'Delete' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="comment-text">{{ c.content }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,14 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Postservice } from '../../cors/postService/postservice';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faThumbsUp, faComment, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 export interface Post {
-  id: number;
+  postId: number;
   content: string;
   createdAt?: string;
   username?: string;
   likeCount?: number;
   commentCount?: number;
+  profileName?: string;
+  liked?: boolean;
 }
 
 export interface Comment {
@@ -21,11 +24,15 @@ export interface Comment {
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './posts.html',
   styleUrl: './posts.css',
 })
 export class Posts implements OnInit {
+  faThumbsUp = faThumbsUp;
+  faComment = faComment;
+  faThumbsDown = faThumbsDown;
+
   posts: Post[] = [];
   loadingPosts = false;
 
@@ -59,26 +66,48 @@ export class Posts implements OnInit {
     });
   }
 
-  // onLike(post: Post): void {
-  //   if (this.likingPostIds.has(post.id)) return;
+  onLike(post: Post): void {
+    if (this.likingPostIds.has(post.postId)) return;
 
-  //   this.likingPostIds.add(post.id);
+    // optimistic UI
+    post.liked = true;
+    post.likeCount = Math.max((post.likeCount ?? 1) + 1, 0);
 
-  //   // Optimistic UI
-  //   post.likeCount = (post.likeCount ?? 0) + 1;
+    this.postsService.postLike(post.postId).subscribe({
+      next: (res) => {
+        // If backend returns updated likeCount, set it here:
+        // post.likeCount = res.likeCount;
+        //
+        this.likingPostIds.add(post.postId);
+      },
+      error: (err) => {
+        post.liked = false;
+        // post.likeCount = Math.max((post.likeCount ?? 1) - 1, 0);
+        // this.likingPostIds.delete(post.postId);
+      },
+    });
+  }
 
-  //   this.postsService.postLike(post.id).subscribe({
-  //     next: () => {
-  //       this.likingPostIds.delete(post.id);
-  //     },
-  //     error: (err) => {
-  //       console.error('Like failed', err);
-  //       // rollback optimistic update
-  //       post.likeCount = Math.max((post.likeCount ?? 1) - 1, 0);
-  //       this.likingPostIds.delete(post.id);
-  //     },
-  //   });
-  // }
+  onUnlike(post: Post): void {
+    if (this.likingPostIds.has(post.postId)) return;
+
+    // this.likingPostIds.add(post.postId);
+
+    // optimistic UI
+    post.liked = false;
+    post.likeCount = Math.max((post.likeCount ?? 1) - 1, 0);
+    this.postsService.postUnlike(post.postId).subscribe({
+      next: (res) => {
+        this.likingPostIds.delete(post.postId);
+
+        console.log('Unlike response:', res);
+        this.fetchPosts(); // Refresh posts to reflect changes
+      },
+      error: (err) => {
+        console.error('Unlike failed:', err);
+      },
+    });
+  }
 
   // openComments(post: Post): void {
   //   this.isCommentsOpen = true;

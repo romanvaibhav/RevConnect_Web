@@ -31,6 +31,8 @@ public class PromotionalPostController {
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
+
+    //Fetching promotinal posts
     @GetMapping
     public ResponseEntity<List<PromotionalPost>> getAllPosts() {
         List<PromotionalPost> posts = postService.getAllPosts();

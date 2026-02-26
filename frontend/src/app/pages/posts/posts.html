@@ -11,25 +11,51 @@
 
     <article class="post-card" *ngFor="let post of posts">
       <div class="post-top">
-        <div class="post-user">{{ post.username || 'User' }}</div>
-        <div class="post-date">{{ post.createdAt || '' }}</div>
+        <div class="post-user">{{ post.profileName || 'User' }}</div>
+        <div class="post-date">{{ post.createdAt | date: 'mediumDate' }}</div>
       </div>
 
       <div class="post-content">
         {{ post.content }}
       </div>
+      <div class="likeandcomment">
+        <p>
+          <span class="count">{{ post.likeCount ?? 0 }} Likes</span>
+        </p>
+        <p id="commentcnt">
+          <span class="count">{{ post.commentCount ?? 0 }} Comments</span>
+        </p>
+      </div>
+      <hr />
 
       <!-- (click)="onLike(post)" -->
 
       <div class="post-actions">
-        <button class="action" [disabled]="likingPostIds.has(post.id)">
-          👍 Like <span class="count">{{ post.likeCount ?? 0 }}</span>
-        </button>
+        <div class="like-actions">
+          <!-- 👍 LIKE BUTTON -->
+          <button
+            class="action"
+            [disabled]="likingPostIds.has(post.postId)"
+            [class.liked-btn]="post.liked"
+            (click)="onLike(post)"
+          >
+            <fa-icon [icon]="faThumbsUp"></fa-icon>
+          </button>
+
+          <!-- 👎 UNLIKE BUTTON -->
+          <button
+            class="action"
+            (click)="onUnlike(post)"
+            [disabled]="likingPostIds.has(post.postId)"
+          >
+            <fa-icon [icon]="faThumbsDown"></fa-icon>
+          </button>
+
+          <span class="count">{{ post.likeCount }}</span>
+        </div>
 
         <!-- (click)="openComments(post)" -->
-        <button class="action">
-          💬 Comment <span class="count">{{ post.commentCount ?? 0 }}</span>
-        </button>
+        <button class="action"><fa-icon [icon]="faComment"></fa-icon> Comment</button>
       </div>
     </article>
 
